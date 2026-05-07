@@ -17,8 +17,66 @@ model User {
   name         String
   email        String    @unique
   passwordHash String    @map("password_hash")
+  projects     Project[]
+  parameters   Parameter[]
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+model Project {
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String
+  userId    Int      @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links     Link[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([slug, userId])
+  @@index([userId])
+  @@map("projects")
+}
+
+model Link {
+  id          Int             @id @default(autoincrement())
+  name        String
+  baseUrl     String          @map("base_url") @db.Text
+  redirectUrl String?         @map("redirect_url") @db.Text
+  projectId   Int             @map("project_id")
+  project     Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  parameters  LinkParameter[]
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  @@index([projectId])
+  @@map("links")
+}
+
+model Parameter {
+  id        Int             @id @default(autoincrement())
+  key       String
+  value     String
+  userId    Int             @map("user_id")
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links     LinkParameter[]
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  @@unique([key, value, userId])
+  @@index([userId])
+  @@map("parameters")
+}
+
+model LinkParameter {
+  linkId      Int       @map("link_id")
+  parameterId Int       @map("parameter_id")
+  order       Int       @default(0)
+  link        Link      @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  parameter   Parameter @relation(fields: [parameterId], references: [id], onDelete: Cascade)
+
+  @@id([linkId, parameterId])
+  @@map("link_parameters")
 }
