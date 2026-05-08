@@ -7,6 +7,7 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "mysql",
   }),
+  trustedOrigins: [process.env.BETTER_AUTH_URL ?? "http://localhost:3000"],
   emailAndPassword: {
     enabled: true,
   },
@@ -18,12 +19,6 @@ export const auth = betterAuth({
       maxAge: 60 * 5,
     },
   },
-  advanced: {
-    database: {
-      generateId: false,
-    },
-  },
 });
 
 export type Session = typeof auth.$Infer.Session;
-export type SessionUser = typeof auth.$Infer.Session.user;
