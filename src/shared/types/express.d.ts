@@ -1,9 +1,9 @@
-import { Session, SessionUser } from "../../auth/auth";
+import { Session } from "../../auth/auth";
 
 declare global {
   namespace Express {
     interface Request {
-      user: SessionUser;
+      user: Session["user"];
       session: Session["session"];
     }
   }
