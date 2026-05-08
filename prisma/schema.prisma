@@ -13,17 +13,15 @@ datasource db {
 }
 
 model User {
-  id           Int         @id @default(autoincrement())
-  name         String
-  email        String      @unique
-  passwordHash String      @map("password_hash")
-  projects     Project[]
-  parameters   Parameter[]
-  createdAt    DateTime    @default(now()) @map("created_at")
-  updatedAt    DateTime    @updatedAt @map("updated_at")
-
-  emailVerified Boolean   @default(false)
-  image         String?   @db.Text
+  id            String      @id
+  name          String
+  email         String      @unique
+  projects      Project[]
+  parameters    Parameter[]
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  emailVerified Boolean     @default(false)
+  image         String?     @db.Text
   sessions      Session[]
   accounts      Account[]
 
@@ -34,7 +32,7 @@ model Project {
   id        Int      @id @default(autoincrement())
   name      String
   slug      String
-  userId    Int      @map("user_id")
+  userId    String   @map("user_id")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   links     Link[]
   createdAt DateTime @default(now()) @map("created_at")
@@ -64,7 +62,7 @@ model Parameter {
   id        Int             @id @default(autoincrement())
   key       String
   value     String
-  userId    Int             @map("user_id")
+  userId    String          @map("user_id")
   user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   links     LinkParameter[]
   createdAt DateTime        @default(now()) @map("created_at")
@@ -94,11 +92,10 @@ model Session {
   updatedAt DateTime @updatedAt
   ipAddress String?  @db.Text
   userAgent String?  @db.Text
-  userId    Int
+  userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
-  @@index([userId])
   @@map("session")
 }
 
@@ -106,7 +103,7 @@ model Account {
   id                    String    @id
   accountId             String    @db.Text
   providerId            String    @db.Text
-  userId                Int
+  userId                String
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?   @db.Text
   refreshToken          String?   @db.Text
