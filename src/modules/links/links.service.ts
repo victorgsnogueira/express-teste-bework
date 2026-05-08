@@ -46,6 +46,22 @@ async function assertParametersOwnership(parameterIds: number[], userId: string)
   }
 }
 
+function appendQueryString(baseUrl: string, queryString: string) {
+  const hashIndex = baseUrl.indexOf("#");
+  const urlWithoutHash =
+    hashIndex === -1 ? baseUrl : baseUrl.slice(0, hashIndex);
+  const hash = hashIndex === -1 ? "" : baseUrl.slice(hashIndex);
+
+  if (!urlWithoutHash.includes("?")) {
+    return `${urlWithoutHash}?${queryString}${hash}`;
+  }
+
+  const separator =
+    urlWithoutHash.endsWith("?") || urlWithoutHash.endsWith("&") ? "" : "&";
+
+  return `${urlWithoutHash}${separator}${queryString}${hash}`;
+}
+
 export const linksService = {
   async create(projectId: number, userId: string, dto: CreateLinkDto) {
     await assertProjectOwnership(projectId, userId);
@@ -161,6 +177,8 @@ export const linksService = {
     }
 
     const queryString = params.toString();
-    return queryString ? `${link.baseUrl}?${queryString}` : link.baseUrl;
+    return queryString
+      ? appendQueryString(link.baseUrl, queryString)
+      : link.baseUrl;
   },
 };
