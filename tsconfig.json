@@ -20,6 +20,7 @@
     "skipLibCheck": true,
     "moduleResolution": "node16",
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@/*": ["./src/*"]
     }
