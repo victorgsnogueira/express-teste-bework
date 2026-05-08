@@ -1,13 +1,33 @@
 import { Router } from "express";
 import { requireAuth } from "../../middlewares/require-auth";
+import { validateBody, validateParams } from "../../middlewares/validate-request";
+import { idParamSchema } from "../../shared/validation/common-schemas";
 import { projectsController } from "./projects.controller";
+import { createProjectSchema, updateProjectSchema } from "./projects.schemas";
 
 export const projectsRouter = Router();
 
 projectsRouter.use(requireAuth);
 
-projectsRouter.post("/", projectsController.create);
+projectsRouter.post(
+  "/",
+  validateBody(createProjectSchema),
+  projectsController.create
+);
 projectsRouter.get("/", projectsController.findAll);
-projectsRouter.get("/:id", projectsController.findOne);
-projectsRouter.put("/:id", projectsController.update);
-projectsRouter.delete("/:id", projectsController.remove);
+projectsRouter.get(
+  "/:id",
+  validateParams(idParamSchema),
+  projectsController.findOne
+);
+projectsRouter.put(
+  "/:id",
+  validateParams(idParamSchema),
+  validateBody(updateProjectSchema),
+  projectsController.update
+);
+projectsRouter.delete(
+  "/:id",
+  validateParams(idParamSchema),
+  projectsController.remove
+);

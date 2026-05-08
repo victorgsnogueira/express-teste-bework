@@ -4,7 +4,7 @@ import { NotFoundError } from "../../shared/errors/app-errors";
 export interface CreateLinkDto {
   name: string;
   baseUrl: string;
-  redirectUrl?: string;
+  redirectUrl?: string | null;
   parameterIds?: number[];
 }
 
