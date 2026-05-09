@@ -1,6 +1,11 @@
 import { Router } from "express";
 import { requireAuth } from "../../middlewares/require-auth";
-import { validateBody, validateParams } from "../../middlewares/validate-request";
+import {
+  validateBody,
+  validateParams,
+  validateQuery,
+} from "../../middlewares/validate-request";
+import { paginationQuerySchema } from "../../shared/pagination";
 import { idParamSchema } from "../../shared/validation/common-schemas";
 import { parametersController } from "./parameters.controller";
 import {
@@ -17,7 +22,11 @@ parametersRouter.post(
   validateBody(createParameterSchema),
   parametersController.create
 );
-parametersRouter.get("/", parametersController.findAll);
+parametersRouter.get(
+  "/",
+  validateQuery(paginationQuerySchema),
+  parametersController.findAll
+);
 parametersRouter.get(
   "/:id",
   validateParams(idParamSchema),

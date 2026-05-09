@@ -1,5 +1,10 @@
 import { prisma } from "../../database/client";
 import { NotFoundError } from "../../shared/errors/app-errors";
+import {
+  getPaginationParams,
+  paginate,
+  PaginationQuery,
+} from "../../shared/pagination";
 
 export interface CreateLinkDto {
   name: string;
@@ -89,19 +94,31 @@ export const linksService = {
     });
   },
 
-  async findAllByProject(projectId: number, userId: string) {
+  async findAllByProject(
+    projectId: number,
+    userId: string,
+    pagination: PaginationQuery
+  ) {
     await assertProjectOwnership(projectId, userId);
 
-    return prisma.link.findMany({
-      where: { projectId },
-      include: {
-        parameters: {
-          include: { parameter: true },
-          orderBy: { order: "asc" },
+    const [total, links] = await prisma.$transaction([
+      prisma.link.count({
+        where: { projectId },
+      }),
+      prisma.link.findMany({
+        where: { projectId },
+        include: {
+          parameters: {
+            include: { parameter: true },
+            orderBy: { order: "asc" },
+          },
         },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+        ...getPaginationParams(pagination),
+      }),
+    ]);
+
+    return paginate(links, total, pagination);
   },
 
   async findOne(id: number, userId: string) {

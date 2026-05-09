@@ -3,6 +3,11 @@ import {
   ConflictError,
   NotFoundError,
 } from "../../shared/errors/app-errors";
+import {
+  getPaginationParams,
+  paginate,
+  PaginationQuery,
+} from "../../shared/pagination";
 
 export interface CreateProjectDto {
   name: string;
@@ -24,11 +29,19 @@ export const projectsService = {
     });
   },
 
-  async findAll(userId: string) {
-    return prisma.project.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-    });
+  async findAll(userId: string, pagination: PaginationQuery) {
+    const [total, projects] = await prisma.$transaction([
+      prisma.project.count({
+        where: { userId },
+      }),
+      prisma.project.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+        ...getPaginationParams(pagination),
+      }),
+    ]);
+
+    return paginate(projects, total, pagination);
   },
 
   async findOne(id: number, userId: string) {

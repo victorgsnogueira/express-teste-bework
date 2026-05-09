@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { PaginationQuery } from "../../shared/pagination";
 import { linksService } from "./links.service";
 
 export const linksController = {
@@ -17,7 +18,12 @@ export const linksController = {
     try {
       const userId = req.user.id;
       const projectId = Number(req.params.projectId);
-      const result = await linksService.findAllByProject(projectId, userId);
+      const pagination = req.validatedQuery as PaginationQuery;
+      const result = await linksService.findAllByProject(
+        projectId,
+        userId,
+        pagination
+      );
       return res.json(result);
     } catch (error) {
       next(error);

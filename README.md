@@ -166,6 +166,29 @@ URLs.
 
 ## Endpoints principais
 
+As rotas de listagem aceitam paginacao por query string:
+
+```http
+GET /api/projects?page=1&perPage=10
+```
+
+`page` comeca em `1` e `perPage` aceita no maximo `100`. A resposta das
+listagens segue este formato:
+
+```json
+{
+  "data": [],
+  "meta": {
+    "page": 1,
+    "perPage": 10,
+    "total": 0,
+    "totalPages": 0,
+    "hasNextPage": false,
+    "hasPreviousPage": false
+  }
+}
+```
+
 ### Autenticacao
 
 - `POST /api/auth/sign-up/email`: cria usuario
@@ -176,7 +199,7 @@ URLs.
 ### Projetos
 
 - `POST /api/projects`
-- `GET /api/projects`
+- `GET /api/projects?page=1&perPage=10`
 - `GET /api/projects/:id`
 - `PUT /api/projects/:id`
 - `DELETE /api/projects/:id`
@@ -184,7 +207,7 @@ URLs.
 ### Parametros
 
 - `POST /api/parameters`
-- `GET /api/parameters`
+- `GET /api/parameters?page=1&perPage=10`
 - `GET /api/parameters/:id`
 - `PUT /api/parameters/:id`
 - `DELETE /api/parameters/:id`
@@ -192,7 +215,7 @@ URLs.
 ### Links
 
 - `POST /api/projects/:projectId/links`
-- `GET /api/projects/:projectId/links`
+- `GET /api/projects/:projectId/links?page=1&perPage=10`
 - `GET /api/links/:id`
 - `PUT /api/links/:id`
 - `DELETE /api/links/:id`

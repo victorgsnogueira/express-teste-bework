@@ -1,6 +1,11 @@
 import { Router } from "express";
 import { requireAuth } from "../../middlewares/require-auth";
-import { validateBody, validateParams } from "../../middlewares/validate-request";
+import {
+  validateBody,
+  validateParams,
+  validateQuery,
+} from "../../middlewares/validate-request";
+import { paginationQuerySchema } from "../../shared/pagination";
 import { projectIdParamSchema } from "../../shared/validation/common-schemas";
 import { linksController } from "./links.controller";
 import { createLinkSchema } from "./links.schemas";
@@ -18,5 +23,6 @@ linksRouter.post(
 linksRouter.get(
   "/",
   validateParams(projectIdParamSchema),
+  validateQuery(paginationQuerySchema),
   linksController.findAllByProject
 );

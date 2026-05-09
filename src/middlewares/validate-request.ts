@@ -35,3 +35,16 @@ export function validateParams(schema: z.ZodType) {
     return next();
   };
 }
+
+export function validateQuery(schema: z.ZodType) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const result = schema.safeParse(req.query);
+
+    if (!result.success) {
+      return next(new ValidationError(formatIssues(result.error)));
+    }
+
+    req.validatedQuery = result.data;
+    return next();
+  };
+}
