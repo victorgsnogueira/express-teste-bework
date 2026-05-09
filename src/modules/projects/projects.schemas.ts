@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { paginationQueryShape } from "../../shared/pagination";
 import { requiredTextSchema } from "../../shared/validation/common-schemas";
 
 const slugSchema = requiredTextSchema.regex(
@@ -17,3 +18,10 @@ export const updateProjectSchema = createProjectSchema.partial().refine(
   (data) => Object.keys(data).length > 0,
   "At least one field must be provided"
 );
+
+export const listProjectsQuerySchema = z
+  .object({
+    ...paginationQueryShape,
+    search: requiredTextSchema.optional(),
+  })
+  .strict();

@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { PaginationQuery } from "../../shared/pagination";
-import { projectsService } from "./projects.service";
+import { ListProjectsQuery, projectsService } from "./projects.service";
 
 export const projectsController = {
   async create(req: Request, res: Response, next: NextFunction) {
@@ -16,8 +15,8 @@ export const projectsController = {
   async findAll(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user.id;
-      const pagination = req.validatedQuery as PaginationQuery;
-      const result = await projectsService.findAll(userId, pagination);
+      const query = req.validatedQuery as ListProjectsQuery;
+      const result = await projectsService.findAll(userId, query);
       return res.json(result);
     } catch (error) {
       next(error);

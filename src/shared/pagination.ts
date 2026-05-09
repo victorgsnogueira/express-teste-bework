@@ -5,6 +5,11 @@ export interface PaginationQuery {
   perPage: number;
 }
 
+export const paginationQueryShape = {
+  page: z.coerce.number().int().positive().default(1),
+  perPage: z.coerce.number().int().positive().max(100).default(10),
+};
+
 export interface PaginatedResult<T> {
   data: T[];
   meta: {
@@ -18,10 +23,7 @@ export interface PaginatedResult<T> {
 }
 
 export const paginationQuerySchema = z
-  .object({
-    page: z.coerce.number().int().positive().default(1),
-    perPage: z.coerce.number().int().positive().max(100).default(10),
-  })
+  .object(paginationQueryShape)
   .strict();
 
 export function getPaginationParams(query: PaginationQuery) {

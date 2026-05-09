@@ -5,10 +5,13 @@ import {
   validateParams,
   validateQuery,
 } from "../../middlewares/validate-request";
-import { paginationQuerySchema } from "../../shared/pagination";
 import { idParamSchema } from "../../shared/validation/common-schemas";
 import { projectsController } from "./projects.controller";
-import { createProjectSchema, updateProjectSchema } from "./projects.schemas";
+import {
+  createProjectSchema,
+  listProjectsQuerySchema,
+  updateProjectSchema,
+} from "./projects.schemas";
 
 export const projectsRouter = Router();
 
@@ -21,7 +24,7 @@ projectsRouter.post(
 );
 projectsRouter.get(
   "/",
-  validateQuery(paginationQuerySchema),
+  validateQuery(listProjectsQuerySchema),
   projectsController.findAll
 );
 projectsRouter.get(

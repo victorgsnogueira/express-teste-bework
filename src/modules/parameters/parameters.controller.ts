@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { PaginationQuery } from "../../shared/pagination";
-import { parametersService } from "./parameters.service";
+import { ListParametersQuery, parametersService } from "./parameters.service";
 
 export const parametersController = {
   async create(req: Request, res: Response, next: NextFunction) {
@@ -16,8 +15,8 @@ export const parametersController = {
   async findAll(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user.id;
-      const pagination = req.validatedQuery as PaginationQuery;
-      const result = await parametersService.findAll(userId, pagination);
+      const query = req.validatedQuery as ListParametersQuery;
+      const result = await parametersService.findAll(userId, query);
       return res.json(result);
     } catch (error) {
       next(error);

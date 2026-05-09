@@ -14,6 +14,12 @@ export interface CreateParameterDto {
   value: string;
 }
 
+export interface ListParametersQuery extends PaginationQuery {
+  search?: string;
+  key?: string;
+  value?: string;
+}
+
 export const parametersService = {
   async create(userId: string, dto: CreateParameterDto) {
     const existing = await prisma.parameter.findFirst({
@@ -29,19 +35,33 @@ export const parametersService = {
     });
   },
 
-  async findAll(userId: string, pagination: PaginationQuery) {
+  async findAll(userId: string, query: ListParametersQuery) {
+    const where = {
+      userId,
+      ...(query.key ? { key: { contains: query.key } } : {}),
+      ...(query.value ? { value: { contains: query.value } } : {}),
+      ...(query.search
+        ? {
+            OR: [
+              { key: { contains: query.search } },
+              { value: { contains: query.search } },
+            ],
+          }
+        : {}),
+    };
+
     const [total, parameters] = await prisma.$transaction([
       prisma.parameter.count({
-        where: { userId },
+        where,
       }),
       prisma.parameter.findMany({
-        where: { userId },
+        where,
         orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-        ...getPaginationParams(pagination),
+        ...getPaginationParams(query),
       }),
     ]);
 
-    return paginate(parameters, total, pagination);
+    return paginate(parameters, total, query);
   },
 
   async findOne(id: number, userId: string) {

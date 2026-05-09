@@ -14,6 +14,10 @@ export interface CreateProjectDto {
   slug: string;
 }
 
+export interface ListProjectsQuery extends PaginationQuery {
+  search?: string;
+}
+
 export const projectsService = {
   async create(userId: string, dto: CreateProjectDto) {
     const existing = await prisma.project.findFirst({
@@ -29,19 +33,31 @@ export const projectsService = {
     });
   },
 
-  async findAll(userId: string, pagination: PaginationQuery) {
+  async findAll(userId: string, query: ListProjectsQuery) {
+    const where = {
+      userId,
+      ...(query.search
+        ? {
+            OR: [
+              { name: { contains: query.search } },
+              { slug: { contains: query.search } },
+            ],
+          }
+        : {}),
+    };
+
     const [total, projects] = await prisma.$transaction([
       prisma.project.count({
-        where: { userId },
+        where,
       }),
       prisma.project.findMany({
-        where: { userId },
+        where,
         orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-        ...getPaginationParams(pagination),
+        ...getPaginationParams(query),
       }),
     ]);
 
-    return paginate(projects, total, pagination);
+    return paginate(projects, total, query);
   },
 
   async findOne(id: number, userId: string) {

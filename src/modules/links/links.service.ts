@@ -13,6 +13,11 @@ export interface CreateLinkDto {
   parameterIds?: number[];
 }
 
+export interface ListLinksQuery extends PaginationQuery {
+  search?: string;
+  hasRedirect?: boolean;
+}
+
 async function assertLinkOwnership(linkId: number, userId: string) {
   const link = await prisma.link.findFirst({
     where: { id: linkId, project: { userId } },
@@ -97,16 +102,33 @@ export const linksService = {
   async findAllByProject(
     projectId: number,
     userId: string,
-    pagination: PaginationQuery
+    query: ListLinksQuery
   ) {
     await assertProjectOwnership(projectId, userId);
 
+    const where = {
+      projectId,
+      ...(query.search
+        ? {
+            OR: [
+              { name: { contains: query.search } },
+              { baseUrl: { contains: query.search } },
+            ],
+          }
+        : {}),
+      ...(query.hasRedirect === undefined
+        ? {}
+        : {
+            redirectUrl: query.hasRedirect ? { not: null } : null,
+          }),
+    };
+
     const [total, links] = await prisma.$transaction([
       prisma.link.count({
-        where: { projectId },
+        where,
       }),
       prisma.link.findMany({
-        where: { projectId },
+        where,
         include: {
           parameters: {
             include: { parameter: true },
@@ -114,11 +136,11 @@ export const linksService = {
           },
         },
         orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-        ...getPaginationParams(pagination),
+        ...getPaginationParams(query),
       }),
     ]);
 
-    return paginate(links, total, pagination);
+    return paginate(links, total, query);
   },
 
   async findOne(id: number, userId: string) {

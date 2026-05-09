@@ -189,6 +189,18 @@ listagens segue este formato:
 }
 ```
 
+As mesmas listagens tambem aceitam filtros simples:
+
+- `GET /api/projects?search=campanha`: busca em `name` e `slug`
+- `GET /api/parameters?search=utm`: busca em `key` e `value`
+- `GET /api/parameters?key=utm_source&value=google`: filtra por chave e valor
+- `GET /api/projects/:projectId/links?search=facebook`: busca em `name` e
+  `baseUrl`
+- `GET /api/projects/:projectId/links?hasRedirect=true`: retorna apenas links
+  com redirect
+- `GET /api/projects/:projectId/links?hasRedirect=false`: retorna apenas links
+  sem redirect
+
 ### Autenticacao
 
 - `POST /api/auth/sign-up/email`: cria usuario

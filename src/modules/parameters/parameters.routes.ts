@@ -5,11 +5,11 @@ import {
   validateParams,
   validateQuery,
 } from "../../middlewares/validate-request";
-import { paginationQuerySchema } from "../../shared/pagination";
 import { idParamSchema } from "../../shared/validation/common-schemas";
 import { parametersController } from "./parameters.controller";
 import {
   createParameterSchema,
+  listParametersQuerySchema,
   updateParameterSchema,
 } from "./parameters.schemas";
 
@@ -24,7 +24,7 @@ parametersRouter.post(
 );
 parametersRouter.get(
   "/",
-  validateQuery(paginationQuerySchema),
+  validateQuery(listParametersQuerySchema),
   parametersController.findAll
 );
 parametersRouter.get(
