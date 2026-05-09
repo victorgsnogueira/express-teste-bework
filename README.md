@@ -30,6 +30,28 @@ npm run build
 npm start
 ```
 
+## Seed do banco
+
+Depois de rodar as migrations, e possivel popular o banco com dados de exemplo:
+
+```bash
+npm run seed
+```
+
+O seed cria um usuario, um projeto, tres parametros UTM e um link associado aos
+parametros.
+
+Credenciais do usuario criado:
+
+```text
+email: seed@bework.local
+senha: SenhaSeed123!
+```
+
+O script e idempotente para os dados desse usuario: se o usuario ja existir, ele
+mantem a conta e recria os projetos, parametros e links de exemplo associados a
+ela.
+
 ## Modelagem das entidades
 
 O sistema foi modelado com a seguinte hierarquia principal:
