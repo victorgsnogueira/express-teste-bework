@@ -36,7 +36,7 @@ export const parametersService = {
       }),
       prisma.parameter.findMany({
         where: { userId },
-        orderBy: { createdAt: "desc" },
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
         ...getPaginationParams(pagination),
       }),
     ]);

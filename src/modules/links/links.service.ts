@@ -113,7 +113,7 @@ export const linksService = {
             orderBy: { order: "asc" },
           },
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
         ...getPaginationParams(pagination),
       }),
     ]);
